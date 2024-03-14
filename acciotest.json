@@ -1,0 +1,4 @@
+{
+    "testRepo": "todo-react-solution",
+    "pathToFile": "cypress/integration/tests/test.spec.js"
+}
