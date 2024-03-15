@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./todo.css";
 
 let id = 0;
+
+
 
 function TodoApp() {
     const [inputValue, setInputValue] = useState('');
@@ -9,30 +11,35 @@ function TodoApp() {
     const [editingTaskId, setEditingTaskId] = useState(null);
 
     const createNewTodo = () => {
-        let found = tasks.some(task => task.title === inputValue);
-        if (found) {
-            alert("Task already exists!");
-            return;
+        let found = false;
+        for (let i = 0; i < tasks.length; i++) {
+            let task = tasks[i];
+            if (task === inputValue) {
+                alert("Already added the task")
+                found = true;
+                break;
+            }
         }
-
-        setTasks([...tasks, { title: inputValue, id: ++id }]);
-        setInputValue('');
+        if (!found) {
+            setTasks([...tasks, { title: inputValue, id: ++id }]);
+            setInputValue('');
+        }
     }
 
     const addTodo = () => {
         if (editingTaskId) {
-            // Edit the respective task
-            setTasks(tasks.map(task => {
+            
+            tasks.forEach(task => {
                 if (task.id === editingTaskId) {
-                    return { ...task, title: inputValue };
+                    task.title = inputValue;
                 }
-                return task;
-            }));
+            });
+
+            setTasks([...tasks]);
             setEditingTaskId(null);
             setInputValue('');
-        } else {
-            createNewTodo();
         }
+        else createNewTodo();
     }
 
     const removeTask = (taskId) => {
@@ -40,14 +47,7 @@ function TodoApp() {
         setTasks(remainingTasks);
     }
 
-    const onEdit = (taskId) => {
-        const task = tasks.find(task => task.id === taskId);
-        if (task) {
-            setInputValue(task.title);
-            setEditingTaskId(taskId);
-        }
-    }
-
+   
     return (
         <div style={{ margin: "20px" }}>
             <h2>To-Do List</h2>
@@ -60,18 +60,22 @@ function TodoApp() {
                 <button onClick={addTodo}>{editingTaskId ? 'Edit Todo' : 'Add Todo'}</button>
             </div>
             <ul className="tasks-list">
-                {tasks.map((task) => (
-                    <li key={task.id} className={`task ${task.id === editingTaskId ? 'active' : ''}`}>
-                        <div>
-                            <span>{task.id}</span>
-                            <span>{task.title}</span>
-                        </div>
-                        <div>
-                            <button onClick={() => onEdit(task.id)}>Edit</button>
-                            <button onClick={() => removeTask(task.id)}>Delete</button>
-                        </div>
-                    </li>
-                ))}
+                {
+                    tasks.map((task) => {
+                        return (
+                            <li className={`task ${task.id === editingTaskId ? 'active' : ''}`}>
+                                <div>
+                                    <span>{task.id}</span>
+                                    <span>{task.title}</span>
+                                </div>
+                                <div>
+                                    
+                                    <button onClick={() => removeTask(task.id)}>Delete</button>
+                                </div>
+                            </li>
+                        );
+                    })
+                }
             </ul>
         </div>
     );
