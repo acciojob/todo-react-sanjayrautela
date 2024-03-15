@@ -1,45 +1,17 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import "./todo.css";
 
 let id = 0;
 
-
-
 function TodoApp() {
     const [inputValue, setInputValue] = useState('');
     const [tasks, setTasks] = useState([]);
-    const [editingTaskId, setEditingTaskId] = useState(null);
 
-    const createNewTodo = () => {
-        let found = false;
-        for (let i = 0; i < tasks.length; i++) {
-            let task = tasks[i];
-            if (task === inputValue) {
-                alert("Already added the task")
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
+    const addTodo = () => {
+        if (inputValue.trim() !== '') { // Check if the input value is not empty
             setTasks([...tasks, { title: inputValue, id: ++id }]);
             setInputValue('');
         }
-    }
-
-    const addTodo = () => {
-        if (editingTaskId) {
-            
-            tasks.forEach(task => {
-                if (task.id === editingTaskId) {
-                    task.title = inputValue;
-                }
-            });
-
-            setTasks([...tasks]);
-            setEditingTaskId(null);
-            setInputValue('');
-        }
-        else createNewTodo();
     }
 
     const removeTask = (taskId) => {
@@ -47,7 +19,6 @@ function TodoApp() {
         setTasks(remainingTasks);
     }
 
-   
     return (
         <div style={{ margin: "20px" }}>
             <h2>To-Do List</h2>
@@ -57,25 +28,20 @@ function TodoApp() {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                 />
-                <button onClick={addTodo}>{editingTaskId ? 'Edit Todo' : 'Add Todo'}</button>
+                <button onClick={addTodo}>Add Todo</button>
             </div>
             <ul className="tasks-list">
-                {
-                    tasks.map((task) => {
-                        return (
-                            <li className={`task ${task.id === editingTaskId ? 'active' : ''}`}>
-                                <div>
-                                    <span>{task.id}</span>
-                                    <span>{task.title}</span>
-                                </div>
-                                <div>
-                                    
-                                    <button onClick={() => removeTask(task.id)}>Delete</button>
-                                </div>
-                            </li>
-                        );
-                    })
-                }
+                {tasks.map((task) => (
+                    <li key={task.id} className="task">
+                        <div>
+                            <span>{task.id}</span>
+                            <span>{task.title}</span>
+                        </div>
+                        <div>
+                            <button onClick={() => removeTask(task.id)}>Delete</button>
+                        </div>
+                    </li>
+                ))}
             </ul>
         </div>
     );
